@@ -40,7 +40,7 @@ exports.getCases =async () => {
     //   });
     // return getDataInfected
 
-    const testPromise = new Promise((reslove, reject) => {
+    const getApiInfectionReport = new Promise((reslove, reject) => {
         request.get(` https://disease.sh/v3/covid-19/historical?lastdays=30`, function(err, res, body){
             if(err) console.log('false')
             if(res.statusCode === 200 ) {
@@ -48,7 +48,7 @@ exports.getCases =async () => {
             }
         });
     })
-     const getData = await testPromise.then(data => {
+     const getData = await getApiInfectionReport.then(data => {
        return data
     })
     const dataInfected = [];

@@ -14,7 +14,7 @@ function App() {
     "#935b6d" ,"#916988" ,"#513d98" ,"#aead3a", "#9e6d71", "#4b5bdc", "#0cd36d",
     "#250662", "#cb5bea", "#228916", "#ac3e1b", "#df514a", "#539397", "#880977",
     "#f697c1", "#ba96ce", "#679c9d", "#c6c42c", "#5d2c52", "#48b41b", "#e1cf3b",
-    "#5be4f0", "#57c4d8", "#a4d17a", "#225b8", "#be608b", "#96b00c", "#088baf",
+    "#5be4f0", "#57c4d8", "#a4d17a", "#d36647", "#be608b", "#96b00c", "#088baf",
     "#f158bf", "#e145ba", "#ee91e3", "#05d371", "#5426e0", "#4834d0", "#802234",
     "#6749e8", "#0971f0", "#8fb413", "#b2b4f0", "#c3c89d", "#c9a941", "#41d158",
     "#fb21a3", "#51aed9", "#5bb32d", "#807fb", "#21538e", "#89d534", "#d36647",
@@ -55,28 +55,32 @@ function App() {
   useEffect(async () => {
     report = await axios.post('http://localhost:4000/get_infected')
     setReport([report.data[0]])
-    console.log(report.data[0].infected_people)
     for(const date in report.data[0].infected_people) {
         setInfectionDate(reportInfection => [...reportInfection, date])
         dateOfInfection.push(date)
     }
     const getReportPerDay = (firstDay) => {
+      let synchronousData = [];
       let index = 0;
         for(const infectionReport of report.data){
-            setInfectionPerDay(reportInfection => [...reportInfection, {country: infectionReport.country, 
-                cases: infectionReport.infected_people[dateOfInfection[i]],
-                color: color[index]}])
-              index++;
+            // setInfectionPerDay(reportInfection => [...reportInfection, {country: infectionReport.country, 
+            //     cases: infectionReport.infected_people[dateOfInfection[i]],
+            //     color: color[index]}])
+            synchronousData = [...synchronousData, {country: infectionReport.country, 
+              cases: infectionReport.infected_people[dateOfInfection[i]],
+              color: color[index]}];
+            index++;
         }
+      return synchronousData;
     }
-    getReportPerDay(i);
+    setInfectionPerDay(getReportPerDay(i))
     var myInterval = setInterval(() => {
         i++;
         setCount(i)
-        setInfectionPerDay([])
-        getReportPerDay(i)
+        // setInfectionPerDay([])
+        // getReportPerDay(i)
+        setInfectionPerDay(getReportPerDay(i))
         if(i === dateOfInfection.length-1) {
-            console.log('CLEAR')
             clearInterval(myInterval);
         }
     }, 1000);
@@ -85,7 +89,8 @@ function App() {
     <React.Fragment>
       <h1><center>Covid Global Cases by SGN</center></h1>
       <h3><center>Date : {JSON.stringify(infectionDate[count])}</center></h3>
-    <div>{infectionPerDay.length === 191 ? ((<InfectionBarChart data={infectionPerDay} />)) : ('')}</div>
+      <InfectionBarChart data={infectionPerDay} />
+    {/* <div>{infectionPerDay.length === 191 ? ((<InfectionBarChart data={infectionPerDay} />)) : ('')}</div> */}
     </React.Fragment>
   );
 }
