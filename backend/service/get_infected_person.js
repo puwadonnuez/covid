@@ -67,5 +67,6 @@ exports.getCases =async () => {
             })
         }
     })
+    // console.log(dataInfected)
     return dataInfected;
 };

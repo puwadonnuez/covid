@@ -1,23 +1,23 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { select, scaleBand, scaleLinear, max } from "d3";
-import useResizeObserver from "./useResizeObserver";
 
 function InfectionBarChart(infection) {
   const svgRef = useRef();
   const wrapperRef = useRef();
-  const dimensions = useResizeObserver(wrapperRef);
+  const [sheight, setSheight] = useState();
+  const [swidth, setSwidth] = useState();
   useEffect(() => {
     const svg = select(svgRef.current);
-    if (!dimensions) return;
     infection.data.sort((a, b) => b.cases - a.cases);
+    setSheight(infection.data.length * 52);
+    setSwidth(1400);
     const yScale = scaleBand()
       .paddingInner(0.1)
       .domain(infection.data.map((value, index) => index)) 
-      .range([0, dimensions.height]); 
-
+      .range([0, infection.data.length * 52]); 
     const xScale = scaleLinear()
       .domain([0, max(infection.data, entry => entry.cases)]) 
-      .range([0, dimensions.width]);
+      .range([0, infection.data.length* 8]);
 
     svg
       .selectAll(".bar")
@@ -49,12 +49,12 @@ function InfectionBarChart(infection) {
       .attr("x", 10)
       .transition()
       .attr("y", (entry, index) => yScale(index) + yScale.bandwidth() / 2 + 5);
-  }, [infection.data, dimensions]);
+  }, [infection.data]);
 
   return (
-    <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-      <svg height='10000' width='1400' ref={svgRef}></svg>
-    </div>
+    <div style={{ marginBottom: "2rem" }}>
+      <svg height={sheight} width={swidth} ref={svgRef}></svg>
+    </div> 
   );
 }
 
